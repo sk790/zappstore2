@@ -1,16 +1,25 @@
 import { View, Text } from "react-native";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, Redirect } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "@/context/authContext";
 
 const Home = () => {
-  const user = null;
-  if (!user) {
-    return <Redirect href={"/(tab)/"} />;
+  const { auth, getToken } = useContext(AuthContext);
+  console.log({ auth });
+
+  useEffect(() => {
+    getToken();
+  }, []);
+
+  if (auth) {
+    return <Redirect href="/(tab)/" />;
+  } else {
+    return <Redirect href="/Login" />;
   }
   return (
     <View>
       <Text>Home</Text>
-      
     </View>
   );
 };
