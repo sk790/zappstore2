@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -12,51 +12,27 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Link, Redirect } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "@/context/authContext";
 
 export default function SignUpScreen() {
-  const [accountType, setAccountType] = useState("user");
   const [mobileNumber, setMobileNumber] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const { login, auth } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const validatePhoneNumber = (number: string) => {
     const phoneRegex = /^[0-9]{10}$/;
     return phoneRegex.test(number);
   };
-  
-  if(auth){
-    return <Redirect href="/(tab)/" />
+  if (user) {
+    return <Redirect href="/(tab)/" />;
   }
-
   const handleSignUp = () => {
-    login(accountType);
     if (!validatePhoneNumber(mobileNumber)) {
       Alert.alert(
         "Invalid Phone Number",
         "Please enter a valid 10-digit phone number."
       );
       return;
-    }
-
-    // Here you would typically call an API to register the user
-    Alert.alert(
-      "Sign Up Successful",
-      `Account Type: ${accountType}\nPhone Number: +91${mobileNumber}`
-    );
-    // storeToken(accountType);
-  };
-  const storeToken = async (token: string) => {
-    try {
-      await AsyncStorage.setItem("@auth_token", token);
-      console.log("Token stored successfully");
-      setToken(token);
-    } catch (error) {
-      console.error("Error storing auth token", error);
     }
   };
 

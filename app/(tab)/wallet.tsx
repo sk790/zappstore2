@@ -1,11 +1,16 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Navbar from '@/components/Navbar'
 
 const wallet = () => {
   return (
-    <View>
-      <Text>wallet</Text>
-    </View>
+    <SafeAreaView>
+      <Navbar/>
+      <View>
+        <Text>wallet</Text>
+      </View>
+    </SafeAreaView>
   )
 }
 

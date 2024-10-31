@@ -1,11 +1,16 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Navbar from '@/components/Navbar'
 
 const order = () => {
   return (
-    <View>
-      <Text>order</Text>
-    </View>
+    <SafeAreaView>
+      <Navbar/>
+      <View>
+        <Text>order</Text>
+      </View>
+    </SafeAreaView>
   )
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -13,23 +13,42 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, Redirect, router } from "expo-router";
+import { AuthContext } from "@/context/authContext";
 
 export default function SignUpScreen() {
   const [accountType, setAccountType] = useState("user");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
 
   const validatePhoneNumber = (number: string) => {
     const phoneRegex = /^[0-9]{10}$/;
     return phoneRegex.test(number);
   };
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    return passwordRegex.test(password);
+  };
+  const { user, setUserInfo } = useContext(AuthContext);
 
-  const handleSignUp = () => {
+  if (user) {
+    return <Redirect href="/(tab)/" />;
+  }
+
+  const handleSignUp = async () => {
     if (!validatePhoneNumber(mobileNumber)) {
       Alert.alert(
         "Invalid Phone Number",
         "Please enter a valid 10-digit phone number."
+      );
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      Alert.alert(
+        "Invalid Password",
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
       );
       return;
     }
@@ -41,12 +60,27 @@ export default function SignUpScreen() {
       );
       return;
     }
+    const res = await fetch("http://192.168.76.190:5000/api/user/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mobile: mobileNumber,
+        password: password,
+        role: accountType,
+      }),
+    });
 
-    // Here you would typically call an API to register the user
-    Alert.alert(
-      "Sign Up Successful",
-      `Account Type: ${accountType}\nPhone Number: +91${mobileNumber}`
-    );
+    const data = await res.json();
+
+    if (data.user) {
+      Alert.alert("Sign Up Successful");
+      setUserInfo(data.user);
+      router.push("/(tab)/");
+    } else {
+      Alert.alert("Sign Up Failed", `${data.message}`);
+    }
   };
 
   return (
@@ -134,9 +168,9 @@ export default function SignUpScreen() {
                 padding: 10,
                 borderRadius: 5,
               }}
-              // value={mobileNumber}
-              // onChangeText={setMobileNumber}
-              // maxLength={10}
+              keyboardType="visible-password"
+              value={password}
+              onChangeText={setPassword}
             />
 
             <View style={styles.checkboxContainer}>
